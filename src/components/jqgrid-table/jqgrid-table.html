@@ -2,6 +2,11 @@
   .demo-wrap h2 {
     text-decoration: underline;
   }
+  .table-wrap{
+    width:968px;
+    height: 350px;
+    margin: 0 auto;
+  }
 </style>
 
 
@@ -11,7 +16,9 @@
   <div class="demo-wrap">
     <h2>{{demoVm.title}}</h2>
 
-    <jqgrid-table {table-data}="demoVm.tableData"/>
+    <div class="table-wrap">
+      <jqgrid-table {table-data}="demoVm.tableData"/>
+    </div>
 
   </div>
 

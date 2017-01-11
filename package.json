@@ -29,6 +29,9 @@
   },
   "dependencies": {
     "async": "^2.0.1",
+    "babel-polyfill": "6.20.0",
+    "bootstrap": "^3.3.7",
+    "bootstrap-table": "^1.11.0",
     "can": "2.3.24",
     "can-connect": "^0.5.0",
     "can-zone": "^0.5.0",
@@ -38,8 +41,7 @@
     "highcharts": "^5.0.0",
     "jquery": "2.2.1",
     "moment": "2.16.0",
-    "steal": "0.16.35",
-    "babel-polyfill": "6.20.0"
+    "steal": "0.16.35"
   },
   "devDependencies": {
     "bitovi-source-map": "^0.4.2-bitovi.2",
