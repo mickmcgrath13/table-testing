@@ -20,14 +20,16 @@ var buildHeaders = function(numColumns){
 
 var getMockData = function(numColumns, numRows){
   var data = {
-        "headers":buildHeaders(numColumns),
-        "rows": buildRows(numColumns, numRows),
-        "cacheId": 148093,
+        "cacheId": "0000",
         "links": [{
           "rel": "self",
-          "href": "https://sprintlab125lbwas.netact.nsn-rdnet.net/pmservices/api/v1/reports/results/148093/data"
+          "href": "https://google.com"
         }]
       };
+
+  data["headers"] = buildHeaders(numColumns);
+  data["rows"] = buildRows(numColumns, numRows);
+
   return data;
 };
 
