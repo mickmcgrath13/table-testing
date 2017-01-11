@@ -1,0 +1,82 @@
+<style>
+  .demo-wrap h2 {
+    text-decoration: underline;
+  }
+  .references{
+    margin: 0;
+    padding:0;
+    list-style-type: none;
+  }
+  .references li{
+    display:inline-block;
+    padding:.05em .5em;
+    border-right: 1px solid #555;
+  }
+  .references li:last-child{
+    border-right: none;
+  }
+</style>
+
+
+<script type="text/stache" class="demo" can-autorender>
+
+  <div class="demo-wrap">
+    <h1>{{demoVm.title}}</h1>
+
+    {{#if demoVm.indexData.types.length}}
+      <h2>Types</h2>
+      {{#each demoVm.indexData.types}}
+        <h3>{{title}}</h3>
+        {{#if description}}
+          <p>
+          {{description}}
+          </p>
+        {{/if}}
+
+        {{#if references.length}}
+          <p>
+            <ul class="references">
+          References: (
+            {{#each references}}
+              <li>
+                <a href="{{href}}" target="_blank">{{label}}</a> 
+              </li>
+            {{/each}}
+          )
+          </p>
+        {{/if}}
+        {{#if demo}}
+          <p>
+            <a href="{{demo.href}}" target="_blank">Demo</a>
+          </p>
+        {{/if}}
+      {{/each}}
+    {{/if}}
+  </div>
+
+
+</script>
+
+<script src="../../../node_modules/steal/steal.js" main="@empty">
+  import can from 'can';
+  import 'can/view/autorender/';
+  import 'can/map/define/';
+  import indexData from 'table-testing/data/index-data';
+
+
+  var DemoVM = can.Map.extend({
+      define: {
+        title: {},
+        indexData: {}
+      }
+    }),
+    vm = can.viewModel('.demo');
+
+  vm.attr({
+    demoVm: new DemoVM({
+      title: 'Table Testing',
+      indexData: indexData
+    })
+  });
+
+</script>

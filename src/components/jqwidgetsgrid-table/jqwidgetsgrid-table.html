@@ -1,0 +1,48 @@
+<style>
+  .demo-wrap h2 {
+    text-decoration: underline;
+  }
+</style>
+
+
+<script type="text/stache" class="demo" can-autorender>
+  <can-import from="table-testing/components/jqwidgetsgrid-table/" />
+
+  <div class="demo-wrap">
+    <h2>{{demoVm.title}}</h2>
+
+    <jqwidgetsgrid-table {table-data}="demoVm.tableData"/>
+
+  </div>
+
+
+
+
+</script>
+
+<script src="../../../node_modules/steal/steal.js" main="@empty">
+  import can from 'can';
+  import 'can/view/autorender/';
+  import 'can/map/define/';
+  import getMockData from 'table-testing/data/getMockData';
+
+
+  var DemoVM = can.Map.extend({
+      define: {
+        title: {},
+        tableData: {}
+      }
+    }),
+    vm = can.viewModel('.demo');
+
+  vm.attr({
+    demoVm: new DemoVM({
+      title: 'Demo for jqwidgetsgrid-table',
+      tableData: getMockData(10,1000)
+    })
+  });
+
+</script>
+
+
+
