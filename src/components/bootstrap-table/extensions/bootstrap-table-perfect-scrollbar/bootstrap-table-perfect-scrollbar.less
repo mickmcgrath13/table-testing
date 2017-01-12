@@ -1,0 +1,23 @@
+
+.fixed-table-container{
+    position: relative;
+    .fixed-table-body{
+        overflow: visible;
+        position: relative;
+    }
+    .fixed-table-body-columns,
+    .fixed-table-header-columns{
+        z-index: 1;
+    }
+    .ps-scrollbar-x-rail, 
+    .ps-scrollbar-y-rail{
+        z-index: 2;
+        opacity:0;
+    }
+    &:hover{
+        .ps-scrollbar-x-rail, 
+        .ps-scrollbar-y-rail{
+            opacity:1;
+        }   
+    }
+}
