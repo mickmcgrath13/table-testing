@@ -9,6 +9,7 @@ import './extensions/bootstrap-table-fixed-columns/bootstrap-table-fixed-columns
 import 'bootstrap/dist/js/bootstrap.min';
 import 'bootstrap-table/dist/bootstrap-table';
 import './extensions/bootstrap-table-fixed-columns/';
+import './extensions/bootstrap-table-perfect-scrollbar/';
 
 
 //We'd probably want to implement our own filter control.  This one is pretty slow.
@@ -39,7 +40,9 @@ export default Component.extend({
 
           //http://issues.wenzhixin.net.cn/bootstrap-table/extensions/fixed-columns.html
           fixedColumns: true,
-          fixedNumber: 2
+          fixedNumber: 2,
+
+          perfectScrollbar: true
       });
     }
   }
