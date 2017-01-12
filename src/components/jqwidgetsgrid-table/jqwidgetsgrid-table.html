@@ -32,7 +32,9 @@
   import 'can/view/autorender/';
   import 'can/map/define/';
   import getMockData from 'table-testing/data/getMockData';
+  import initFPSCounter from 'table-testing/util/fps';
 
+  initFPSCounter();
 
   var DemoVM = can.Map.extend({
       define: {
