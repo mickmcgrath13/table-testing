@@ -8,7 +8,7 @@ var buildRows = function(numColumns, numRows){
     rows.push(thisRow);
   }
   return rows;
-}
+};
 
 var buildHeaders = function(numColumns){
   var headers = [];
@@ -16,7 +16,7 @@ var buildHeaders = function(numColumns){
     headers.push(i + "-header");
   }
   return headers;
-}
+};
 
 var getMockData = function(numColumns, numRows){
   var data = {
@@ -33,4 +33,4 @@ var getMockData = function(numColumns, numRows){
   return data;
 };
 
-  export default getMockData;
+export default getMockData;
