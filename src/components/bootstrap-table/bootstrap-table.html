@@ -88,12 +88,34 @@
     vm = can.viewModel('.demo');
 
 
-  var mockData = getMockData(20,20000);
+  var startIndex = 0,
+      refreshIntervalDuration = 5000,
+      // refreshIntervalDuration = 10000,
+      cols = 20,
+      rows = 20000,
+      maxRows = 10000,
+      // maxRows = 50000,
+      mockData = getMockData(cols,rows, startIndex),
+      demoVm = new DemoVM({
+        title: 'Demo for bootstrap-table',
+        tableData: mockData
+      }),
+      refreshInterval = setInterval(() => {
+        // debugger;
+        if(startIndex >= maxRows){
+          clearInterval(refreshInterval);
+          return;
+        }
+        startIndex += rows;
+        let newData = getMockData(cols, rows, startIndex);
+        demoVm.attr("tableData", newData);
+      }, refreshIntervalDuration);
+
+
+  alert("data retrieved - start render of table");
+
   vm.attr({
-    demoVm: new DemoVM({
-      title: 'Demo for bootstrap-table',
-      tableData: mockData
-    })
+    demoVm: demoVm
   });
 
 </script>
