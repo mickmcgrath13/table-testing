@@ -13,7 +13,7 @@ export default Map.extend({
           return {
             datafield: i,
             text: "header-" + i,
-            pinned: i < 3,
+            pinned: i < 2,
             width: 100
           }
         });
