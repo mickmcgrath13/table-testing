@@ -35,12 +35,13 @@ export default Component.extend({
           derivedAdapter = this.viewModel.attr("dataAdapter");
 
       this.$el.jqxGrid({
+        height:300,
+        width: 350,
         source: derivedAdapter,
         columns: derivedColumns,
         sortable: true,
         filterable: true,
         pageable: true,
-        autoheight: true
       });
     }
   }
