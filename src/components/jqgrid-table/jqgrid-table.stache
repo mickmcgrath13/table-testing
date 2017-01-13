@@ -1,1 +1,3 @@
-<p>{{message}}</p>
+{{!-- ugh jqgrid code requires an id to be on this table --}}
+<table id="jqgrid"></table>
+<div id="jqgrid-pager"></div>
