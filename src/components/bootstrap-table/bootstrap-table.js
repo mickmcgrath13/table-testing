@@ -10,6 +10,7 @@ import 'bootstrap/dist/js/bootstrap.min';
 import 'bootstrap-table/dist/bootstrap-table';
 import './extensions/bootstrap-table-fixed-columns/';
 import './extensions/bootstrap-table-perfect-scrollbar/';
+import './extensions/bootstrap-table-pagination-events/';
 
 
 //We'd probably want to implement our own filter control.  This one is pretty slow.
@@ -23,14 +24,18 @@ export default Component.extend({
     "inserted": function($el, ev){
       this.$el = $(this.element);
       this.$table = this.$el.find("table");
+      var performanceMap = this.viewModel.attr("performanceMap");
+
+      performanceMap && performanceMap.setRenderStartTime();
       this.initBootstrapTable();
+      performanceMap && performanceMap.setRenderEndTime();
     },
 
     initBootstrapTable(){
       let tableData = this.viewModel.attr("tableData");
       let derivedHeaders = this.viewModel.attr("tableHeaders");
       let derivedRows = this.viewModel.attr("tableRows");
-
+      let self = this; //need self because we need the context of some of the callback functions
       this.$table.bootstrapTable({
           columns: derivedHeaders.attr(),
           data: derivedRows.attr(),
@@ -42,8 +47,42 @@ export default Component.extend({
           fixedColumns: true,
           fixedNumber: 2,
 
-          perfectScrollbar: true
+          perfectScrollbar: true,
+
+          onPageChange: function(num, size){
+            self.onPageChange(this, num, size);
+          },
+          onPageChangeBefore: function(num, size){
+            self.onPageChangeBefore(this, num, size);
+          },
+
+          onSort: function(name, order){
+            self.onSort(this, name, order);
+          },
+          onSortAfter: function(name, order){
+            self.onSortAfter(this, name, order);
+          }
       });
+    },
+    
+    onPageChangeBefore(tablePlugin, num, size){
+      var performanceMap = this.viewModel.attr("performanceMap");
+      performanceMap && performanceMap.setLastPageStart();
+    },
+
+    onPageChange(tablePlugin, num, size){
+      var performanceMap = this.viewModel.attr("performanceMap");
+      performanceMap && performanceMap.setLastPageEnd();
+    },
+
+    onSortAfter(tablePlugin, name, order){
+      var performanceMap = this.viewModel.attr("performanceMap");
+      performanceMap && performanceMap.setLastSortEnd();
+    },
+
+    onSort(tablePlugin, name, order){
+      var performanceMap = this.viewModel.attr("performanceMap");
+      performanceMap && performanceMap.setLastSortStart();
     }
   }
 });

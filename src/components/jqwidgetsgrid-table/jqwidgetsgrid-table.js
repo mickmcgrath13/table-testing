@@ -20,6 +20,9 @@ import 'jqwidgets-framework/jqwidgets/jqxgrid.sort';
 import 'jqwidgets-framework/jqwidgets/jqxgrid.pager';
 import 'jqwidgets-framework/jqwidgets/jqxgrid.grouping';
 
+//unnecessary unless we need to implement more events.
+import './extensions/jqxgrid-pagination-events/';
+
 export default Component.extend({
   tag: 'jqwidgetsgrid-table',
   viewModel: ViewModel,
@@ -27,7 +30,14 @@ export default Component.extend({
   events: {
     "inserted": function(){
       this.$el = $(this.element);
+
+      var performanceMap = this.viewModel.attr("performanceMap");
+
+      performanceMap && performanceMap.setRenderStartTime();
       this.initJQWidgetsTable();
+      performanceMap && performanceMap.setRenderEndTime();
+
+      
     },
 
     initJQWidgetsTable(){
@@ -42,7 +52,49 @@ export default Component.extend({
         sortable: true,
         filterable: true,
         pageable: true,
+        pagesize: 100,
+        pagesizeoptions: [100]
+      })
+      .bind("pagechanged", (event) => {
+          var args = event.args,
+              pagenumber = args.pagenum,
+              pagesize = args.pagesize;
+
+          this.onPageChange(this.$el.data("jqxGrid"), pagenumber, pagesize)
+      })
+      .bind("pagechanging", (event) => {
+          var args = event.args,
+              pagenumber = args.pagenum,
+              pagesize = args.pagesize;
+
+          this.onPageChangeBefore(this.$el.data("jqxGrid"), pagenumber, pagesize)
+      })
+      .bind("sort", (event) => {
+          this.onSort(this.$el.data("jqxGrid"))
+      })
+      .bind("beforesortby", (event) => {
+          this.onSortBefore(this.$el.data("jqxGrid"))
       });
+    },
+
+    onPageChangeBefore(tablePlugin, num, size){
+      var performanceMap = this.viewModel.attr("performanceMap");
+      performanceMap && performanceMap.setLastPageStart();
+    },
+
+    onPageChange(tablePlugin, num, size){
+      var performanceMap = this.viewModel.attr("performanceMap");
+      performanceMap && performanceMap.setLastPageEnd();
+    },
+
+    onSortBefore(tablePlugin){
+      var performanceMap = this.viewModel.attr("performanceMap");
+      performanceMap && performanceMap.setLastSortStart();
+    },
+
+    onSort(tablePlugin){
+      var performanceMap = this.viewModel.attr("performanceMap");
+      performanceMap && performanceMap.setLastSortEnd();
     }
   }
 });

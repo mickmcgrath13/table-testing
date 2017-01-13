@@ -1,5 +1,6 @@
 import Map from 'can/map/';
 import 'can/map/define/';
+import PerformanceMap from 'table-testing/util/performance-map';
 
 export default Map.extend({
   define: {
@@ -30,6 +31,9 @@ export default Map.extend({
 
         return dataAdapter;
       }
+    },
+    performanceMap:{
+      value: new PerformanceMap()
     }
   }
 });
