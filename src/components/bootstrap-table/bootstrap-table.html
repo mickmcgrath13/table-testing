@@ -24,36 +24,7 @@
     <div class="table-wrap">
       <bootstrap-table {table-data}="demoVm.tableData" {(performance-map)}="demoVm.performanceMap" />
     </div>
-    <div class="table-wrap">
-      <bootstrap-table {table-data}="demoVm.tableData" />
-    </div>
 
-    <div class="table-wrap">
-      <bootstrap-table {table-data}="demoVm.tableData" />
-    </div>
-
-    <div class="table-wrap">
-      <bootstrap-table {table-data}="demoVm.tableData" />
-    </div>
-
-    <div class="table-wrap">
-      <bootstrap-table {table-data}="demoVm.tableData" />
-    </div>
-
-
-    <div class="table-wrap">
-      <bootstrap-table {table-data}="demoVm.tableData" />
-    </div>
-
-
-    <div class="table-wrap">
-      <bootstrap-table {table-data}="demoVm.tableData" />
-    </div>
-
-
-    <div class="table-wrap">
-      <bootstrap-table {table-data}="demoVm.tableData" />
-    </div>
 
   </div>
 
@@ -96,7 +67,8 @@
   import can from 'can';
   import 'can/view/autorender/';
   import 'can/map/define/';
-  import getMockData from 'table-testing/data/getMockData';
+  // import getMockData from 'table-testing/data/getMockData';
+  import getMockData from 'table-testing/data/real-getMockData';
   import initFPSCounter from 'table-testing/util/fps';
   import PerformanceMap from 'table-testing/util/performance-map';
 

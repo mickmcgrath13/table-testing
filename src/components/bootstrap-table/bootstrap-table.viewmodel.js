@@ -11,13 +11,23 @@ export default Map.extend({
       get(){
         let tableData = this.attr("tableData");
         return tableData.attr("headers").map((h, i) => {
-          return {
-            id: i,
-            field: i,
-            title: "header-" + i,
-            sortable: true,
-            originalData: h
+          var objOut = {
+              id: i,
+              field: i,
+              title: "header-" + i,
+              sortable: true,
+              originalData: h
+            };
+
+          if(h instanceof Map){
+            var n = h.attr("name");
+            if(n){
+              objOut.title=n;
+            }
+
+            //TODO: check type and add formatting
           }
+          return objOut;
         })
       }
     },
