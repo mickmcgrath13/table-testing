@@ -2,10 +2,14 @@
   .demo-wrap h2 {
     text-decoration: underline;
   }
+  .demo-wrap{
+    margin-bottom:1em;
+  }
   .table-wrap{
     max-width:350px;
     height: 350px;
-    margin: 0 auto;
+    display:inline-block;
+    margin-bottom:5em;
   }
 
 </style>
@@ -18,9 +22,69 @@
     <h2>{{demoVm.title}}</h2>
 
     <div class="table-wrap">
-      <bootstrap-table {table-data}="demoVm.tableData"/>
+      <bootstrap-table {table-data}="demoVm.tableData" {(performance-map)}="demoVm.performanceMap" />
+    </div>
+    <div class="table-wrap">
+      <bootstrap-table {table-data}="demoVm.tableData" />
     </div>
 
+    <div class="table-wrap">
+      <bootstrap-table {table-data}="demoVm.tableData" />
+    </div>
+
+    <div class="table-wrap">
+      <bootstrap-table {table-data}="demoVm.tableData" />
+    </div>
+
+    <div class="table-wrap">
+      <bootstrap-table {table-data}="demoVm.tableData" />
+    </div>
+
+
+    <div class="table-wrap">
+      <bootstrap-table {table-data}="demoVm.tableData" />
+    </div>
+
+
+    <div class="table-wrap">
+      <bootstrap-table {table-data}="demoVm.tableData" />
+    </div>
+
+
+    <div class="table-wrap">
+      <bootstrap-table {table-data}="demoVm.tableData" />
+    </div>
+
+  </div>
+
+
+  <div class="performance-wrap">
+    <div class="render-time metric">
+      <label>
+        Render Time:
+        </label>
+      <span>
+        {{demoVm.performanceMap.renderTime}}
+      </span>
+    </div>
+
+    <div class="average-page-duration metric">
+      <label>
+        Average Page Duration:
+        </label>
+      <span>
+        {{demoVm.performanceMap.pageDurationAverage}}
+      </span>
+    </div>
+
+    <div class="average-sort-duration metric">
+      <label>
+        Average Sort Duration:
+        </label>
+      <span>
+        {{demoVm.performanceMap.sortDurationAverage}}
+      </span>
+    </div>
   </div>
 
 
@@ -34,20 +98,23 @@
   import 'can/map/define/';
   import getMockData from 'table-testing/data/getMockData';
   import initFPSCounter from 'table-testing/util/fps';
+  import PerformanceMap from 'table-testing/util/performance-map';
 
   initFPSCounter();
 
   var DemoVM = can.Map.extend({
       define: {
         title: {},
-        tableData: {}
+        tableData: {},
+        performanceMap: {
+          value: new PerformanceMap()
+        }
       }
     }),
     vm = can.viewModel('.demo');
 
 
-  var mockData = getMockData(20,10000);
-  alert("data retrieved - start render of table");
+  var mockData = getMockData(20,20000);
   vm.attr({
     demoVm: new DemoVM({
       title: 'Demo for bootstrap-table',

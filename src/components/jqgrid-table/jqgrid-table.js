@@ -7,8 +7,8 @@ import 'jquery';
 import 'jqGrid/js/jquery.jqGrid';
 import 'jqGrid/js/i18n/grid.locale-en';
 import 'jqGrid/css/ui.jqgrid.css!';
-import './styles/bootstrap.min.css!';
-import './styles/ui.jqgrid-bootstrap.css!';
+import 'bootstrap/dist/css/bootstrap.min.css!';
+import 'jqGrid/css/ui.jqgrid-bootstrap.css!';
 
 export default Component.extend({
   tag: 'jqgrid-table',
@@ -16,8 +16,15 @@ export default Component.extend({
   events: {
     "inserted": function(){
       this.$el = $(this.element);
+
+      var performanceMap = this.viewModel.attr("performanceMap");
+
+      performanceMap && performanceMap.setRenderStartTime();
       this.initJQGrid();
+      performanceMap && performanceMap.setRenderEndTime();
+      
     },
+    isChangingPage: false,
     initJQGrid(){
       let columns = this.viewModel.attr("tableColumns"),
           // jqgrid must be an array. Object.values on can.Map includes length & _cid :/
@@ -39,8 +46,29 @@ export default Component.extend({
         // adding row counts to the pager pushes the pager buttons out of view :/
         //viewrecords: true,
         regional: 'en',
-        rowNum: 30
+        rowNum: 100,
+        onPaging: (pagingType, targetEl) => {
+          this.onPageChangeBefore();
+        },
+        gridComplete: () => {
+          this.onPageChange();
+        }
+
       }).jqGrid("setFrozenColumns");
+    },
+
+    onPageChangeBefore(){
+      this.isChangingPage = true;
+      var performanceMap = this.viewModel.attr("performanceMap");
+      performanceMap && performanceMap.setLastPageStart();
+    },
+
+    onPageChange(){
+      if(this.isChangingPage){
+        this.isChangingPage = false;
+        var performanceMap = this.viewModel.attr("performanceMap");
+        performanceMap && performanceMap.setLastPageEnd();
+      }
     }
   },
   template
