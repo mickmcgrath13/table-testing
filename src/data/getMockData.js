@@ -1,4 +1,4 @@
-var buildRows = function(numColumns, numRows, startIndex){
+var buildRows = function(numColumns, numRows, startIndex = 0){
   var rows = [], thisRow;
   for(var i = startIndex; i < (numRows+startIndex); i++){
     thisRow = [];
