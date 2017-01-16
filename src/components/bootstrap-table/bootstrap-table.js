@@ -8,10 +8,11 @@ import 'bootstrap-table/dist/bootstrap-table.min.css!';
 import './extensions/bootstrap-table-fixed-columns/bootstrap-table-fixed-columns.css!';
 import 'bootstrap/dist/js/bootstrap.min';
 import 'bootstrap-table/src/bootstrap-table';
-import 'bootstrap-table/src/extensions/multiple-sort/bootstrap-table-multiple-sort'
+import './extensions/bootstrap-table-multiple-sort/';
 import './extensions/bootstrap-table-fixed-columns/';
 import './extensions/bootstrap-table-perfect-scrollbar/';
 import './extensions/bootstrap-table-pagination-events/';
+import './extensions/bootstrap-table-refresh-data/';
 
 
 //We'd probably want to implement our own filter control.  This one is pretty slow.
@@ -67,6 +68,8 @@ export default Component.extend({
 
           showMultiSort: true,
 
+          diffProp: 3,
+
           onPageChange: function(num, size){
             self.onPageChange(this, num, size);
           },
@@ -104,55 +107,21 @@ export default Component.extend({
     onSort(tablePlugin, name, order){
       var performanceMap = this.viewModel.attr("performanceMap");
       performanceMap && performanceMap.setLastSortStart();
-    }
+    },
     //---- END EVENTS ----//
 
 
     //---- DATA CHANGING ----//
     "{viewModel} tableRows": function(vm, ev, newVal, oldVal){
       if(this.manageDataOnChange){
-        this.onDataChanged(newVal, oldVal);
+        var newRows = newVal.attr ? newVal.attr() : newVal;
+        this.onDataChanged(newRows, oldVal);
       }
     },
     onDataChanged(newVal, oldVal){
       this.$table.bootstrapTable("refreshData", newVal);
-    },
-
-    //---- END DATA CHANGING ----//
-
-
-    //---- DIFFING ALGORITHM ----//
-    /*
-     * getRowDiff
-     * Compares two lists
-     * returns a list of differences
-     *
-     * New Values Found:
-     * {
-     *    row: originalRecord,
-     *    type: "added",
-     *    index: i
-     * }
-     *
-     *
-     * Record Not Found:
-     * {
-     *    row: originalRecord,
-     *    type: "removed",
-     *    index: i
-     * }
-     * 
-     */
-    getRowDiff(newRows, oldRows){
-
-    },
-
-    refreshData(newData){
-
-    },
-    addRows(rows, sorted){
     }
-    //---- END DIFFING ALGORITHM ----//
+    //---- END DATA CHANGING ----//
 
 
   }

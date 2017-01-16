@@ -42,6 +42,7 @@
     "jqGrid": "^5.1.1",
     "jquery": "2.2.1",
     "jqwidgets-framework": "^4.4.0",
+    "lodash": "^4.17.4",
     "moment": "2.16.0",
     "perfect-scrollbar": "^0.6.16",
     "stats.js": "^0.17.0",
