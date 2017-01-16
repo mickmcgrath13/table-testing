@@ -17,7 +17,7 @@ export default Map.extend({
               title: "header-" + i,
               sortable: true,
               originalData: h,
-              width: i == 0 ? 185 : 110
+              width: i == 0 ? 193 : 110
             };
 
           if(h instanceof Map){
@@ -26,7 +26,19 @@ export default Map.extend({
               objOut.title=n;
             }
 
-            //TODO: check type and add formatting
+            switch (h.type) {
+              case 'TIME':
+                objOut.formatter = function(value) {
+                  value = new Date(value);
+                  return value.toLocaleDateString() + " " + value.toLocaleTimeString();
+                };
+                break;
+              case 'KPI':
+                objOut.formatter = function(value) {
+                  return value ? value.toFixed(2) : value;
+                };
+                break;
+            }
           }
           return objOut;
         })
