@@ -345,6 +345,8 @@
         };
 
         for (var i = 0; i < this.options.sortPriority.length; i++) {
+
+
             var order = this.options.sortPriority[i].sortOrder === 'desc' ? -1 : 1,
                 aa = a[this.options.sortPriority[i].sortName],
                 bb = b[this.options.sortPriority[i].sortName];
@@ -367,6 +369,11 @@
                 order * cmp(aa, bb));
             arr2.push(
                 order * cmp(bb, aa));
+
+
+            if(cmp(arr1, arr2) !== 0){
+                break;
+            }
         }
 
         return cmp(arr1, arr2);

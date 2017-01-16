@@ -46,22 +46,49 @@ var loopMax = 50000,
 
     //---- DIFFING ALGORITHM ----//
     // BootstrapTable.prototype.refreshData = function (allRows) {
+    //     var sortStart,
+    //         sortEnd,
+    //         drawStart,
+    //         drawEnd;
+
+    //     sortStart = new Date().getTime();
 
     //     //sort new rows
     //     allRows.sort((a, b) => {
     //         return this.sortComparator(a, b);
     //     });
     //     this.data = allRows;
+
+    //     sortEnd = new Date().getTime();
         
+    //     drawStart = new Date().getTime();
     //     //ensure new, combined data set is sorted properly
     //     this.initPagination();
     //     this.initBody(true);
+    //     drawEnd = new Date().getTime();
+
+    //     console.log("sortTime", sortEnd - sortStart);
+    //     console.log("drawTime", drawEnd - drawStart);
     // };
-    
+
     BootstrapTable.prototype.refreshData = function (allRows) {
         //get a diff of the old data and the new data
         var oldRows = this.data,
-            newRows = this.getRowDiff(allRows, oldRows);
+            newRows;
+
+
+        var sortStart,
+            sortEnd,
+            drawStart,
+            drawEnd,
+            diffStart,
+            diffEnd;
+
+        diffStart = new Date().getTime();
+        newRows = this.getRowDiff(allRows, oldRows);
+        diffEnd = new Date().getTime();
+
+        sortStart = new Date().getTime();
 
         //sort new rows
         newRows.sort((a, b) => {
@@ -129,9 +156,19 @@ var loopMax = 50000,
 
         this.isDiffingRows = false;
 
+
+        sortEnd = new Date().getTime();
+
+
+        drawStart = new Date().getTime();
         //ensure new, combined data set is sorted properly
         this.initPagination();
         this.initBody(true);
+        drawEnd = new Date().getTime();
+
+        console.log("diffTime", diffEnd - diffStart);
+        console.log("sortTime", sortEnd - sortStart);
+        console.log("drawTime", drawEnd - drawStart);
     };
 
     /*

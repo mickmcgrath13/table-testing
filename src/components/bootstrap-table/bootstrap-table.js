@@ -59,6 +59,7 @@ export default Component.extend({
           pagination: true,
           height: this.$el.height(),
           search: true,
+          pageSize: 100,
 
           //http://issues.wenzhixin.net.cn/bootstrap-table/extensions/fixed-columns.html
           fixedColumns: true,
