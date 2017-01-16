@@ -7,7 +7,8 @@ import 'bootstrap/dist/css/bootstrap.min.css!';
 import 'bootstrap-table/dist/bootstrap-table.min.css!';
 import './extensions/bootstrap-table-fixed-columns/bootstrap-table-fixed-columns.css!';
 import 'bootstrap/dist/js/bootstrap.min';
-import 'bootstrap-table/dist/bootstrap-table';
+import 'bootstrap-table/src/bootstrap-table';
+import 'bootstrap-table/src/extensions/multiple-sort/bootstrap-table-multiple-sort'
 import './extensions/bootstrap-table-fixed-columns/';
 import './extensions/bootstrap-table-perfect-scrollbar/';
 import './extensions/bootstrap-table-pagination-events/';
@@ -48,6 +49,8 @@ export default Component.extend({
           fixedNumber: 2,
 
           perfectScrollbar: true,
+
+          showMultiSort: true,
 
           onPageChange: function(num, size){
             self.onPageChange(this, num, size);
