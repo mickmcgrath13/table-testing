@@ -16,7 +16,8 @@ export default Map.extend({
               field: i,
               title: "header-" + i,
               sortable: true,
-              originalData: h
+              originalData: h,
+              width: i == 0 ? 185 : 110
             };
 
           if(h instanceof Map){
