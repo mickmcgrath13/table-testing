@@ -107,12 +107,12 @@
           return;
         }
         startIndex += rows;
-        let newData = getMockData(cols, rows, startIndex);
-        demoVm.attr("tableData", newData);
+        let newData = getMockData(cols, rows, startIndex),
+            tableData = demoVm.attr("tableData").attr();
+
+        tableData.rows.push.apply(tableData.rows, newData.rows);
+        demoVm.attr("tableData", tableData);
       }, refreshIntervalDuration);
-
-
-  alert("data retrieved - start render of table");
 
   vm.attr({
     demoVm: demoVm

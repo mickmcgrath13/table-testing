@@ -22,6 +22,18 @@ export default Component.extend({
   viewModel: ViewModel,
   template,
   events:{
+
+    //---- CONTROLLER PROPERTIES ----//
+
+    //flag to know whether or not to manually insert/remove items
+    //  Initially false because the initialization of the comoponent
+    //  will insert all items in the beginning
+    manageDataOnChange: false,
+
+    //---- END CONTROLLER PROPERTIES ----//
+
+
+    //---- INITIALIZATION ----//
     "inserted": function($el, ev){
       this.$el = $(this.element);
       this.$table = this.$el.find("table");
@@ -30,6 +42,9 @@ export default Component.extend({
       performanceMap && performanceMap.setRenderStartTime();
       this.initBootstrapTable();
       performanceMap && performanceMap.setRenderEndTime();
+
+      //set flag for managing incoming data
+      this.manageDataOnChange = true;
     },
 
     initBootstrapTable(){
@@ -67,7 +82,10 @@ export default Component.extend({
           }
       });
     },
-    
+    //---- END INITIALIZATION ----//
+
+
+    //---- EVENTS ----//
     onPageChangeBefore(tablePlugin, num, size){
       var performanceMap = this.viewModel.attr("performanceMap");
       performanceMap && performanceMap.setLastPageStart();
@@ -87,5 +105,55 @@ export default Component.extend({
       var performanceMap = this.viewModel.attr("performanceMap");
       performanceMap && performanceMap.setLastSortStart();
     }
+    //---- END EVENTS ----//
+
+
+    //---- DATA CHANGING ----//
+    "{viewModel} tableRows": function(vm, ev, newVal, oldVal){
+      if(this.manageDataOnChange){
+        this.onDataChanged(newVal, oldVal);
+      }
+    },
+    onDataChanged(newVal, oldVal){
+      this.$table.bootstrapTable("refreshData", newVal);
+    },
+
+    //---- END DATA CHANGING ----//
+
+
+    //---- DIFFING ALGORITHM ----//
+    /*
+     * getRowDiff
+     * Compares two lists
+     * returns a list of differences
+     *
+     * New Values Found:
+     * {
+     *    row: originalRecord,
+     *    type: "added",
+     *    index: i
+     * }
+     *
+     *
+     * Record Not Found:
+     * {
+     *    row: originalRecord,
+     *    type: "removed",
+     *    index: i
+     * }
+     * 
+     */
+    getRowDiff(newRows, oldRows){
+
+    },
+
+    refreshData(newData){
+
+    },
+    addRows(rows, sorted){
+    }
+    //---- END DIFFING ALGORITHM ----//
+
+
   }
 });
