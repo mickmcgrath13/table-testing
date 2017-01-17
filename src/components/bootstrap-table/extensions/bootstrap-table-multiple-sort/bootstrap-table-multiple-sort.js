@@ -313,16 +313,27 @@
                 }
             }
 
-            if (!ctrlOrMeta && (!existingSortRecord || !sortRecords)) {
-                this.options.sortPriority = [sortRecord];
-            } else {
-                // if we've already sorted by this column reverse the direction of the existing sort record
+            // if we've already sorted by this column reverse the direction
+            if (existingSortRecord) {
+                existingSortRecord.sortOrder = existingSortRecord.sortOrder == 'asc' ? 'desc' : 'asc';
+            }
+
+            // reinit sorting if modifier key not held or no sort records
+            if (!ctrlOrMeta || !sortRecords) {
                 if (existingSortRecord) {
-                    existingSortRecord.sortOrder = existingSortRecord.sortOrder == 'asc' ? 'desc' : 'asc';
-                } else {
+                    sortRecord = existingSortRecord;
+                }
+
+                this.options.sortPriority = [sortRecord];
+            }
+            // if modifier key held either change column direction or add another column
+            else {
+                // if we've already sorted by this column reverse the direction of the existing sort record
+                if (!existingSortRecord) {
                     this.options.sortPriority.push(sortRecord);
                 }
             }
+
             this.onMultipleSort(event);
         }
     };
