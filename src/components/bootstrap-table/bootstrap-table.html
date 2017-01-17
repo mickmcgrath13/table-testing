@@ -3,10 +3,10 @@
     text-decoration: underline;
   }
   .demo-wrap{
-    margin-bottom:1em;
+    margin-bottom:8em;
   }
   .table-wrap{
-    max-width: 450px;
+    max-width: 1026px;
     height: 350px;
     display:inline-block;
     margin-bottom:5em;
@@ -94,7 +94,7 @@
       // refreshIntervalDuration = 10000,
       cols = 20, //this is not used with real data
       rows = 20000,
-      maxRows = 10000,
+      maxRows = 40000,
       // maxRows = 50000,
       mockData = getMockData(cols,rows, startIndex),
       demoVm = new DemoVM({
@@ -103,11 +103,11 @@
       }),
       refreshInterval = setInterval(() => {
         // debugger;
+        startIndex += rows;
         if(startIndex >= maxRows){
           clearInterval(refreshInterval);
           return;
         }
-        startIndex += rows;
         let newData = getMockData(cols, rows, startIndex),
             tableData = demoVm.attr("tableData").attr();
 

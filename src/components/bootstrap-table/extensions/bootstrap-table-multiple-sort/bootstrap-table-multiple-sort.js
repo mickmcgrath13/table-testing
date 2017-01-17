@@ -333,6 +333,8 @@
                     this.options.sortPriority.push(sortRecord);
                 }
             }
+            
+            this.trigger('sort', this.options.sortPriority);
 
             this.onMultipleSort(event);
         }

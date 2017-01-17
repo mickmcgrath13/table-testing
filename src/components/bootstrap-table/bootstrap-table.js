@@ -106,7 +106,7 @@ export default Component.extend({
       performanceMap && performanceMap.setLastSortEnd();
     },
 
-    onSort(tablePlugin, name, order){
+    onSort(tablePlugin, sortPrioirty){
       var performanceMap = this.viewModel.attr("performanceMap");
       performanceMap && performanceMap.setLastSortStart();
     },
