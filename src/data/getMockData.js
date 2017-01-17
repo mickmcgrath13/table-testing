@@ -1,6 +1,6 @@
-var buildRows = function(numColumns, numRows){
+var buildRows = function(numColumns, numRows, startIndex = 0){
   var rows = [], thisRow;
-  for(var i = 0; i < numRows; i++){
+  for(var i = startIndex; i < (numRows+startIndex); i++){
     thisRow = [];
     for(var j = 0; j < numColumns; j++){
       thisRow.push(j + "-row-" + i);
@@ -18,7 +18,7 @@ var buildHeaders = function(numColumns){
   return headers;
 };
 
-var getMockData = function(numColumns, numRows){
+var getMockData = function(numColumns, numRows, startIndex){
   var data = {
         "cacheId": "0000",
         "links": [{
@@ -28,7 +28,7 @@ var getMockData = function(numColumns, numRows){
       };
 
   data["headers"] = buildHeaders(numColumns);
-  data["rows"] = buildRows(numColumns, numRows);
+  data["rows"] = buildRows(numColumns, numRows, startIndex);
 
   return data;
 };

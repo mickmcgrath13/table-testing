@@ -3,10 +3,10 @@
     text-decoration: underline;
   }
   .demo-wrap{
-    margin-bottom:1em;
+    margin-bottom:8em;
   }
   .table-wrap{
-    max-width: 450px;
+    max-width: 1026px;
     height: 350px;
     display:inline-block;
     margin-bottom:5em;
@@ -26,6 +26,7 @@
     <div class="table-wrap">
       <bootstrap-table {table-data}="demoVm.tableData" {(performance-map)}="demoVm.performanceMap" />
     </div>
+
 
 
   </div>
@@ -88,12 +89,34 @@
     vm = can.viewModel('.demo');
 
 
-  var mockData = getMockData(20,20000);
+  var startIndex = 0,
+      refreshIntervalDuration = 10000,
+      // refreshIntervalDuration = 10000,
+      cols = 20, //this is not used with real data
+      rows = 20000,
+      maxRows = 40000,
+      // maxRows = 50000,
+      mockData = getMockData(cols,rows, startIndex),
+      demoVm = new DemoVM({
+        title: 'Demo for bootstrap-table',
+        tableData: mockData
+      }),
+      refreshInterval = setInterval(() => {
+        // debugger;
+        startIndex += rows;
+        if(startIndex >= maxRows){
+          clearInterval(refreshInterval);
+          return;
+        }
+        let newData = getMockData(cols, rows, startIndex),
+            tableData = demoVm.attr("tableData").attr();
+
+        tableData.rows.push.apply(tableData.rows, newData.rows);
+        demoVm.attr("tableData", tableData);
+      }, refreshIntervalDuration);
+
   vm.attr({
-    demoVm: new DemoVM({
-      title: 'Demo for bootstrap-table',
-      tableData: mockData
-    })
+    demoVm: demoVm
   });
 
 </script>

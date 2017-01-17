@@ -14,7 +14,6 @@ export default Map.extend({
           var objOut = {
               id: i,
               field: i,
-              title: "header-" + i,
               sortable: true,
               originalData: h,
               width: i == 0 ? 193 : 110
@@ -24,6 +23,7 @@ export default Map.extend({
             var n = h.attr("name");
             if(n){
               objOut.title=n;
+              objOut.titleTooltip=n;
             }
 
             switch (h.type) {
@@ -35,7 +35,7 @@ export default Map.extend({
                 break;
               case 'KPI':
                 objOut.formatter = function(value) {
-                  return value ? value.toFixed(2) : value;
+                  return value ? value.toLocaleString() : value;
                 };
                 break;
             }
