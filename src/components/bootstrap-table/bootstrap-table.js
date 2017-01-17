@@ -68,6 +68,7 @@ export default Component.extend({
           perfectScrollbar: true,
 
           showMultiSort: true,
+          sortPriority: [{sortName: 1, sortOrder: 'asc'}, {sortName: 3, sortOrder: 'desc'}],
 
           diffProp: 3,
 

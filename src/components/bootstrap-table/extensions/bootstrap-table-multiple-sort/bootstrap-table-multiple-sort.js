@@ -215,6 +215,7 @@
 
     var BootstrapTable = $.fn.bootstrapTable.Constructor,
         _initToolbar = BootstrapTable.prototype.initToolbar,
+        _init = BootstrapTable.prototype.init,
         _onSort = BootstrapTable.prototype.onSort;
 
     BootstrapTable.prototype.initToolbar = function() {
@@ -275,6 +276,15 @@
                     that.assignSortableArrows();
                 }
             });
+        }
+    };
+
+    BootstrapTable.prototype.init = function() {
+        _init.apply(this, Array.prototype.slice.apply(arguments));
+
+        // init sorting sorting provided
+        if (this.options.sortPriority !== null && typeof this.options.sortPriority === 'object') {
+            this.onMultipleSort();
         }
     };
 
