@@ -35,7 +35,7 @@ export default Map.extend({
                 break;
               case 'KPI':
                 objOut.formatter = function(value) {
-                  return value ? value.toFixed(2) : value;
+                  return value ? value.toLocaleString() : value;
                 };
                 break;
             }
