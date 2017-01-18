@@ -4,6 +4,7 @@
 
 import $ from 'jquery';
 import PerfectScrollbar from 'perfect-scrollbar';
+import PerfectScrollbarInstances from 'perfect-scrollbar/src/js/plugin/instances';
 import 'perfect-scrollbar/dist/css/perfect-scrollbar.min.css!';
 import './bootstrap-table-perfect-scrollbar.less!';
 
@@ -13,6 +14,9 @@ import './bootstrap-table-perfect-scrollbar.less!';
     $.extend($.fn.bootstrapTable.defaults, {
         perfectScrollbar: false
     });
+
+    $.fn.bootstrapTable.methods.push('disableScroll');
+    $.fn.bootstrapTable.methods.push('enableScroll');
 
     var BootstrapTable = $.fn.bootstrapTable.Constructor,
         _init = BootstrapTable.prototype.init,
@@ -24,7 +28,24 @@ import './bootstrap-table-perfect-scrollbar.less!';
           wheelSpeed: 2,
           wheelPropagation: true
         });
+    };
 
+    BootstrapTable.prototype.disableScroll = function () {
+        var $tableBody = this.$tableBody;
+
+        setTimeout(() => {
+            PerfectScrollbar.destroy($tableBody[0]);
+        });
+    };
+    BootstrapTable.prototype.enableScroll = function () {
+
+        var $tableBody = this.$tableBody;
+        if(!$tableBody.is(".ps-container")){
+            PerfectScrollbar.initialize($tableBody[0], {
+              wheelSpeed: 2,
+              wheelPropagation: true
+            });
+        }
     };
 
     BootstrapTable.prototype.init = function () {

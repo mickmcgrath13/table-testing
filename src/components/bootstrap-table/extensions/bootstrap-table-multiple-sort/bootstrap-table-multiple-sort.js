@@ -7,6 +7,9 @@
  * Modification: Mick McGrath <https://github.com/mickmcgrath13>
  */
 
+
+import Comparators from './comparator';
+
 (function($) {
     'use strict';
 
@@ -135,7 +138,7 @@
                         return;
                     }
 
-                    that.onMultipleSort();
+                    that.applySort();
 
                 }
             });
@@ -152,11 +155,13 @@
     };
 
     $.extend($.fn.bootstrapTable.defaults, {
-        showMultiSort: false,
+        multiSort: false,
         sortPriority: null,
-        onMultipleSort: function() {
-            return false;
-        }
+        sortWithWebWorkers: true,
+        sortWebWorkerLoadingIndicatorClass: "loading-indicator pull-right",
+        $sortWebWorkerLoadingIndicator:null,
+        onSortWebworkerLoading: ()=>{},
+        onSortWebworkerLoadingDone: ()=>{}
     });
 
     $.extend($.fn.bootstrapTable.defaults.icons, {
@@ -166,7 +171,9 @@
     });
 
     $.extend($.fn.bootstrapTable.Constructor.EVENTS, {
-        'multiple-sort.bs.table': 'onMultipleSort'
+        'sort-after.bs.table': 'onSortAfter',
+        'sort-webworker-loading.bs.table': 'onSortWebworkerLoading',
+        'sort-webworker-loading-done.bs.table': 'onSortWebworkerLoadingDone'
     });
 
     $.extend($.fn.bootstrapTable.locales, {
@@ -216,7 +223,8 @@
     var BootstrapTable = $.fn.bootstrapTable.Constructor,
         _initToolbar = BootstrapTable.prototype.initToolbar,
         _init = BootstrapTable.prototype.init,
-        _onSort = BootstrapTable.prototype.onSort;
+        _onSort = BootstrapTable.prototype.onSort,
+        _initBody = BootstrapTable.prototype.initBody;
 
     BootstrapTable.prototype.initToolbar = function() {
         this.showToolbar = true;
@@ -226,7 +234,7 @@
 
         _initToolbar.apply(this, Array.prototype.slice.apply(arguments));
 
-        if (this.options.showMultiSort) {
+        if (this.options.multiSort) {
             var $btnGroup = this.$toolbar.find('>.btn-group').first(),
                 $multiSortBtn = this.$toolbar.find('div.multi-sort');
 
@@ -255,7 +263,7 @@
 
             this.$el.on('load-success.bs.table', function() {
                 if (!isSingleSort && that.options.sortPriority !== null && typeof that.options.sortPriority === 'object') {
-                    that.onMultipleSort();
+                    that.applySort();
                 }
             });
 
@@ -284,12 +292,50 @@
 
         // init sorting sorting provided
         if (this.options.sortPriority !== null && typeof this.options.sortPriority === 'object') {
-            this.onMultipleSort();
+            this.applySort();
         }
     };
 
+    BootstrapTable.prototype.initBody = function() {
+        _initBody.apply(this, Array.prototype.slice.apply(arguments));
+
+        if (this.options.sortWithWebWorkers) {
+            var $fixedBody = this.$tableBody;
+
+            if (!this.$sortWebWorkerLoadingIndicator || !this.$sortWebWorkerLoadingIndicator.length) {
+                if(this.options.$sortWebWorkerLoadingIndicator){
+                    this.$sortWebWorkerLoadingIndicator = this.options.$sortWebWorkerLoadingIndicator;
+                }else{
+                    this.$sortWebWorkerLoadingIndicator = $('<div class="' + this.options.sortWebWorkerLoadingIndicatorClass + '">Loading ...</div>').hide();
+                }
+
+                $fixedBody.append(this.$sortWebWorkerLoadingIndicator);
+                this.$el.on('sort.bs.table', () => {
+                    this.$sortWebWorkerLoadingIndicator &&
+                    this.$sortWebWorkerLoadingIndicator.length &&
+                    this.$sortWebWorkerLoadingIndicator.css({
+                        "top":$fixedBody.scrollTop(),
+                        "left":$fixedBody.scrollLeft()
+                    }).show();
+                });
+                this.$el.on('sort-after.bs.table', () => {
+                    this.$sortWebWorkerLoadingIndicator &&
+                    this.$sortWebWorkerLoadingIndicator.length &&
+                    this.$sortWebWorkerLoadingIndicator.css({
+                        top:"",
+                        left:""
+                    }).hide();
+                });
+            }
+
+        }
+    };
+
+    //initSort isn't compatible with multi sort functionality
+    BootstrapTable.prototype.initSort = function () {};
+
     BootstrapTable.prototype.onSort = function(event) {
-        if(!this.options.showMultiSort){
+        if(!this.options.multiSort){
             _onSort.apply(this, Array.prototype.slice.apply(arguments));
             return;
         }
@@ -333,10 +379,8 @@
                     this.options.sortPriority.push(sortRecord);
                 }
             }
-            
-            this.trigger('sort', this.options.sortPriority);
 
-            this.onMultipleSort(event);
+            this.applySort(event);
         }
     };
 
@@ -354,62 +398,110 @@
         this.setButtonStates();
     };
 
-    BootstrapTable.prototype.sortComparator = function(a,b) {
-        if(!this.options.sortPriority){
-            return false;
-        }
-
-
-        var arr1 = [],
-            arr2 = [];
-
-        var cmp = function(x, y) {
-            return x > y ? 1 : x < y ? -1 : 0;
-        };
-
-        for (var i = 0; i < this.options.sortPriority.length; i++) {
-
-
-            var order = this.options.sortPriority[i].sortOrder === 'desc' ? -1 : 1,
-                aa = a[this.options.sortPriority[i].sortName],
-                bb = b[this.options.sortPriority[i].sortName];
-
-            if (aa === undefined || aa === null) {
-                aa = '';
-            }
-            if (bb === undefined || bb === null) {
-                bb = '';
-            }
-            if ($.isNumeric(aa) && $.isNumeric(bb)) {
-                aa = parseFloat(aa);
-                bb = parseFloat(bb);
-            }
-            if (typeof aa !== 'string') {
-                aa = aa.toString();
-            }
-
-            arr1.push(
-                order * cmp(aa, bb));
-            arr2.push(
-                order * cmp(bb, aa));
-
-
-            if(cmp(arr1, arr2) !== 0){
-                break;
-            }
-        }
-
-        return cmp(arr1, arr2);
+    BootstrapTable.prototype.sortComparator = function(a,b,sortPriority){
+        return Comparators.comparator(a,b,sortPriority);
     };
 
-    BootstrapTable.prototype.onMultipleSort = function(event) {
-        this.data.sort((a, b) => {
-            return this.sortComparator(a, b);
+    BootstrapTable.prototype.applySort = function(event) {
+        //these events need to wait until the next tick
+        //so that the thos.$el.data('bootstrap.table') can be set
+        setTimeout(() => {
+            this.trigger('sort', this.options.sortPriority);
+            if(this.options.sortWithWebWorkers){
+                this.trigger('sort-webworker-loading');
+            }
         });
 
-        this.initBody();
-        this.assignSortableArrows();
-        this.trigger('multiple-sort');
+        return this.runSort().then((sortedData) => {
+            this.initData(sortedData);
+            this.initBody();
+            this.assignSortableArrows();
+            this.trigger('sort-after');
+            if(this.options.sortWithWebWorkers){
+                this.trigger('sort-webworker-loading-done');
+            }
+            return sortedData;
+        });
+    };
+
+    BootstrapTable.prototype.runSort = function(){
+        if(this.currentSortPromise){
+            //cancel the promise and remove the event listeners
+            this.currentSortPromise.reject();
+            delete this.currentSortPromise;
+        }
+
+        var data = this.data,
+            sortPriority = this.options.sortPriority,
+            sortComparator = this.sortComparator,
+            sortWithWebWorkers = this.options.sortWithWebWorkers;
+
+        this.currentSortPromise = function(){
+
+            var resolve, reject, always;
+
+            var p = new Promise((_resolve, _reject) => {
+                resolve = _resolve;
+                reject = _reject;
+            });
+
+            p.resolve = resolve;
+            p.reject = function(event) {
+                if(always){
+                    always();
+                }
+                //TODO: call reject?  do we need it?  must be a new Error...  // reject(new Error());
+                // reject.apply(this, Array.prototype.slice.apply(arguments));
+            };
+            p.isRejectable = true;
+
+
+            if(sortWithWebWorkers && typeof(window.Worker) !== 'undefined'){
+                var worker = new Worker('./extensions/bootstrap-table-multiple-sort/worker-sort.js'),
+                    messageCallback = (event) => {
+                        p && p.resolve(event.data);
+                        always();
+                    },
+                    errorCallback = (event) => {
+                        p && p.reject(event);
+                    },
+                    removeEventListeners = () => {
+                        worker && worker.removeEventListener('message', messageCallback);
+                        worker && worker.removeEventListener('error', errorCallback);
+                    },
+                    addEventListeners = () => {
+                        worker && worker.addEventListener('message', messageCallback);
+                        worker && worker.addEventListener('error', errorCallback);
+                    };
+
+                always = () => {
+                    removeEventListeners();
+                    worker && worker.terminate();
+                };
+
+                addEventListeners();
+                worker.postMessage({
+                    data: data,
+                    sortPriority: sortPriority
+                });
+            }else{
+                data.sort((a, b) => {
+                    return sortComparator(a, b, sortPriority);
+                });
+                p.resolve(data);
+            }
+
+            return p;
+            
+        }();
+
+
+        //TODO: add to a queue of active promises?
+
+        return this.currentSortPromise.then(d => {
+            delete this.currentSortPromise;
+            return d;
+        });
     };
 
     BootstrapTable.prototype.addLevel = function(index, sortPriority) {
