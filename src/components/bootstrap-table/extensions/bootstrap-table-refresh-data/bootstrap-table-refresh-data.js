@@ -46,130 +46,226 @@ var loopMax = 50000,
 
     //---- DIFFING ALGORITHM ----//
     // BootstrapTable.prototype.refreshData = function (allRows) {
+    //     //debugging
+    //     currentLoop = 0;
+    //     //end debugging
+
+    //     //debugging
     //     var sortStart,
     //         sortEnd,
     //         drawStart,
     //         drawEnd;
+    //     //end debugging
 
+
+    //     //debugging
     //     sortStart = new Date().getTime();
+    //     //end debugging
 
     //     //sort new rows
-    //     allRows.sort((a, b) => {
-    //         return this.sortComparator(a, b);
-    //     });
     //     this.data = allRows;
+    //     var sortPromise = new Promise((resolve) => {
+    //         if(this.runSort && typeof(this.runSort) === "function"){
+    //             this.runSort().then(() => {
+    //                 // runSort does all of the initBody,etc stuff.  Resolve with false
+    //                 // to skip doing it again 
+    //                 resolve(false);
+    //             });
+    //         }else{
+    //             this.data.sort((a, b) => {
+    //                 return this.sortComparator(a, b, this.options.sortPriority);
+    //             });
+    //             resolve(this.data);
+    //         }
+    //     });
 
-    //     sortEnd = new Date().getTime();
-        
-    //     drawStart = new Date().getTime();
-    //     //ensure new, combined data set is sorted properly
-    //     this.initPagination();
-    //     this.initBody(true);
-    //     drawEnd = new Date().getTime();
 
-    //     console.log("sortTime", sortEnd - sortStart);
-    //     console.log("drawTime", drawEnd - drawStart);
+    //     sortPromise.then((sortedData) => {
+    //         //debugging
+    //         sortEnd = new Date().getTime();
+    //         console.log("");
+    //         console.log("Performance Metrics on [newRows, totalRows]", newRows.length, allRows.length);
+    //         console.log("sortTime", sortEnd - sortStart);
+    //         //end debugging
+
+    //         //if sortedData is false (sortPromise resolved with false),
+    //         //do not draw stuff
+    //         if(!sortedData){
+    //             return;
+    //         }
+
+
+    //         //debugging
+    //         drawStart = new Date().getTime();
+    //         //end debugging
+
+    //         this.initPagination();
+    //         this.initBody(true);
+
+    //         //debugging
+    //         drawEnd = new Date().getTime();
+    //         console.log("drawTime", drawEnd - drawStart);
+    //         //end debugging
+            
+    //     });
     // };
 
 
     BootstrapTable.prototype.refreshData = function (allRows) {
+        //debugging
+        currentLoop = 0;
+        //end debugging
+
+
         //get a diff of the old data and the new data
         var oldRows = this.data,
             newRows;
 
-
+        //debugging
         var sortStart,
             sortEnd,
             drawStart,
             drawEnd,
             diffStart,
-            diffEnd;
+            diffEnd,
+            mergeStart,
+            mergeEnd;
+        //end debugging
 
+        //debugging
         diffStart = new Date().getTime();
-        newRows = this.getRowDiff(allRows, oldRows);
-        diffEnd = new Date().getTime();
+        //end debugging
 
+        newRows = this.getRowDiff(allRows, oldRows);
+
+        //debugging
+        diffEnd = new Date().getTime();
+        //end debugging
+
+
+        //debugging
         sortStart = new Date().getTime();
+        //end debugging
 
         //sort new rows
-        newRows.sort((a, b) => {
-            return this.sortComparator(a, b);
+        var sortPromise = new Promise((resolve) => {
+            if(this.sortData && typeof(this.s ortData) === "function"){
+                this.sortData(newRows).then(resolve)
+            }else{
+                newRows.sort((a, b) => {
+                    return this.sortComparator(a, b, this.options.sortPriority);
+                });
+                resolve(newRows);
+            }
         });
 
-        //add the new rows to the data set
-        this.isDiffingRows = true;
 
-        //if there is no sort priority, just add the items to the end
-        if(!this.options.sortPriority){
-            for(var i = oldRows.length, j=0; i < allRows.length; i++, j++){
-                this.insertRow({
-                    index: i,
-                    row: newRows[j]
-                });
-            }
-        }else{
-            var i = 0,
-                totalRows = allRows.length,
-                currentNewItem = newRows.shift(),
-                currentItem, comparatorResult, updateRowItem;
+        sortPromise.then((newSortedRows) => {
+            //debugging
+            sortEnd = new Date().getTime();
+            //end debugging
 
-            while(i < totalRows){
-                if(currentLoop++ > loopMax){
-                    alert("loopMax hit");
-                    break;
+            //add the new rows to the data set
+            this.isDiffingRows = true;
+
+            //debugging
+            mergeStart = new Date().getTime();
+            //end debugging
+            this.mergeRows(newSortedRows, oldRows, allRows.length).then((mergedRows) => {
+                //debugging
+                mergeEnd = new Date().getTime();
+                //end debugging
+
+                this.data = mergedRows;
+                this.isDiffingRows = false;
+
+                //debugging
+                drawStart = new Date().getTime();
+                //end debugging
+
+                this.initPagination();
+                this.initBody(true);
+
+                //debugging
+                drawEnd = new Date().getTime();
+                //end debugging
+
+                //debugging
+                console.log("");
+                console.log("Performance Metrics on [newRows, totalRows]", newRows.length, allRows.length);
+                console.log("diffTime", diffEnd - diffStart);
+                console.log("sortTime", sortEnd - sortStart);
+                console.log("mergeTime", mergeEnd - mergeStart);
+                console.log("drawTime", drawEnd - drawStart);
+                //end debugging
+                
+            });
+            
+        });
+    };
+
+
+    BootstrapTable.prototype.mergeRows = function(newRows, oldRows, totalRows){
+        var sortPriority = this.options.sortPriority,
+            mergedRows = oldRows;
+
+        return new Promise((resolve) => {
+            //if there is no sort priority, just add the items to the end
+            if(!sortPriority){
+                for(var i = oldRows.length, j=0; i < totalRows; i++, j++){
+                    mergedRows.splice(i, 0, newRows[j]);
                 }
-                //exit if we run out of new rows
-                if(!newRows || !newRows.length){
-                    break;
-                }
+            }else{
+                var i = 0,
+                    currentNewItem = newRows.shift(),
+                    currentItem, comparatorResult, updateRowItem;
 
-                currentItem = oldRows[i];
-                updateRowItem = false;
+                while(i < totalRows){
 
-                //if we've reached the end of the oldRows but still have newRows
-                //  they go at the end
-                if(i > (oldRows.length-1)){
-                    this.insertRow({
-                        index: i++,
-                        row: currentNewItem
-                    });
-                    updateRowItem = true;
-                }else{
-                    var comparatorResult = this.sortComparator(currentNewItem, currentItem);
-                    
-                    //new item is before or equal, insert the item
-                    if(comparatorResult === -1 || comparatorResult === 0){
-                        this.insertRow({
-                            index: i++,
-                            row: currentNewItem
-                        });
+                    //debugging
+                    if(currentLoop++ > loopMax){
+                        alert("loopMax hit");
+                        break;
+                    }
+                    //end debugging
+
+                    //exit if we run out of new rows
+                    if(!newRows || !newRows.length){
+                        break;
+                    }
+
+                    currentItem = oldRows[i];
+                    updateRowItem = false;
+
+                    //if we've reached the end of the oldRows but still have newRows
+                    //  they go at the end
+                    if(i > (oldRows.length-1)){
+                        mergedRows.splice(i++, 0, currentNewItem);
                         updateRowItem = true;
-                    }else if(comparatorResult === 1){
-                        i++;
+                    }else{
+                        var comparatorResult = this.sortComparator(currentNewItem, currentItem, sortPriority);
+                        
+                        //new item is before or equal, insert the item
+                        if(comparatorResult === -1 || comparatorResult === 0){
+                            mergedRows.splice(i++, 0, currentNewItem);
+                            updateRowItem = true;
+                        }else if(comparatorResult === 1){
+                            i++;
+                        }else{
+                            //should never get here... what do we do???
+                            console.warn("Reach supposedly unreachable code - bootstrab-table-refresh-data.js - mergeRows.  Breaking out of row merge");
+                            break;
+                        }
+                    }
+
+                    if(updateRowItem){
+                        currentNewItem = newRows.shift();
                     }
                 }
-                if(updateRowItem){
-                    currentNewItem = newRows.shift();
-                }
             }
-        }
 
-
-        this.isDiffingRows = false;
-
-
-        sortEnd = new Date().getTime();
-
-
-        drawStart = new Date().getTime();
-        //ensure new, combined data set is sorted properly
-        this.initPagination();
-        this.initBody(true);
-        drawEnd = new Date().getTime();
-
-        console.log("diffTime", diffEnd - diffStart);
-        console.log("sortTime", sortEnd - sortStart);
-        console.log("drawTime", drawEnd - drawStart);
+            resolve(mergedRows);
+        });
     };
 
     /*
@@ -183,8 +279,6 @@ var loopMax = 50000,
         });
     };
 
-    BootstrapTable.prototype.addRows = function(rows, sorted){
-    };
     //---- END DIFFING ALGORITHM ----//
 
 })($);

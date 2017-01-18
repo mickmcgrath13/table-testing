@@ -55,7 +55,7 @@ export default Component.extend({
       let self = this; //need self because we need the context of some of the callback functions
       this.$table.bootstrapTable({
           columns: derivedHeaders.attr(),
-          data: derivedRows.attr(),
+          data: derivedRows.attr ? derivedRows.attr() : derivedRows.attr(),
           pagination: true,
           height: this.$el.height(),
           search: true,

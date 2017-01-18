@@ -424,19 +424,15 @@ import Comparators from './comparator';
         });
     };
 
-    BootstrapTable.prototype.runSort = function(){
-        if(this.currentSortPromise){
-            //cancel the promise and remove the event listeners
-            this.currentSortPromise.reject();
-            delete this.currentSortPromise;
-        }
-
-        var data = this.data,
-            sortPriority = this.options.sortPriority,
+    BootstrapTable.prototype.sortData = function(data){
+        var sortPriority = this.options.sortPriority,
             sortComparator = this.sortComparator,
             sortWithWebWorkers = this.options.sortWithWebWorkers;
 
-        this.currentSortPromise = function(){
+        if(!data){
+            data = this.data;
+        }
+        return function(){ 
 
             var resolve, reject, always;
 
@@ -494,6 +490,16 @@ import Comparators from './comparator';
             return p;
             
         }();
+    };
+
+    BootstrapTable.prototype.runSort = function(data){
+        if(this.currentSortPromise){
+            //cancel the promise and remove the event listeners
+            this.currentSortPromise.reject();
+            delete this.currentSortPromise;
+        }
+
+        this.currentSortPromise = this.sortData(data);
 
 
         //TODO: add to a queue of active promises?

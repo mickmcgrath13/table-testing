@@ -90,10 +90,10 @@
 
 
   var startIndex = 0,
-      refreshIntervalDuration = 10000,
+      refreshIntervalDuration = 5000,
       // refreshIntervalDuration = 10000,
       cols = 20, //this is not used with real data
-      rows = 20000,
+      rows = 10000, //41556 => max rows before Maximum call stack size exceeded
       maxRows = 40000,
       // maxRows = 50000,
       mockData = getMockData(cols,rows, startIndex),
