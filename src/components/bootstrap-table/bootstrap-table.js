@@ -8,9 +8,9 @@ import 'bootstrap-table/dist/bootstrap-table.min.css!';
 import './extensions/bootstrap-table-fixed-columns/bootstrap-table-fixed-columns.css!';
 import 'bootstrap/dist/js/bootstrap.min';
 import 'bootstrap-table/src/bootstrap-table';
+import './extensions/bootstrap-table-perfect-scrollbar/';
 import './extensions/bootstrap-table-multiple-sort/';
 import './extensions/bootstrap-table-fixed-columns/';
-import './extensions/bootstrap-table-perfect-scrollbar/';
 import './extensions/bootstrap-table-pagination-events/';
 import './extensions/bootstrap-table-refresh-data/';
 
@@ -60,6 +60,7 @@ export default Component.extend({
           height: this.$el.height(),
           search: true,
           pageSize: 100,
+          multiSortWithWebWorkers: true,
 
           //http://issues.wenzhixin.net.cn/bootstrap-table/extensions/fixed-columns.html
           fixedColumns: true,
@@ -67,8 +68,9 @@ export default Component.extend({
 
           perfectScrollbar: true,
 
-          showMultiSort: true,
-          sortPriority: [{sortName: 1, sortOrder: 'asc'}, {sortName: 3, sortOrder: 'desc'}],
+          multiSort: true,
+          // sortPriority: [{sortName: 1, sortOrder: 'asc'}, {sortName: 3, sortOrder: 'desc'}],
+          sortPriority: [{sortName: 0, sortOrder: 'desc'}],
 
           diffProp: 3,
 
@@ -84,6 +86,13 @@ export default Component.extend({
           },
           onSortAfter: function(name, order){
             self.onSortAfter(this, name, order);
+          },
+
+          onSortWebworkerLoading: function(){
+            self.disableScroll();
+          },
+          onSortWebworkerLoadingDone: function(){
+            self.enableScroll();
           }
       });
     },
@@ -102,11 +111,13 @@ export default Component.extend({
     },
 
     onSortAfter(tablePlugin, name, order){
+      this.viewModel.attr("isLoading", false);
       var performanceMap = this.viewModel.attr("performanceMap");
       performanceMap && performanceMap.setLastSortEnd();
     },
 
     onSort(tablePlugin, sortPrioirty){
+      this.viewModel.attr("isLoading", true);
       var performanceMap = this.viewModel.attr("performanceMap");
       performanceMap && performanceMap.setLastSortStart();
     },
@@ -122,9 +133,16 @@ export default Component.extend({
     },
     onDataChanged(newVal, oldVal){
       this.$table.bootstrapTable("refreshData", newVal);
-    }
+    },
     //---- END DATA CHANGING ----//
 
+
+    disableScroll(){
+      this.$table.bootstrapTable("disableScroll");
+    },
+    enableScroll(){
+      this.$table.bootstrapTable("enableScroll");
+    },
 
   }
 });

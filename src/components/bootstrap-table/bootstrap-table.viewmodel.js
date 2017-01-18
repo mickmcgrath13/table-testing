@@ -52,6 +52,10 @@ export default Map.extend({
     },
     performanceMap:{
       value: new PerformanceMap()
+    },
+
+    isLoading:{
+      value: false
     }
   }
 });

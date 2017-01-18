@@ -71,6 +71,7 @@ var loopMax = 50000,
     //     console.log("drawTime", drawEnd - drawStart);
     // };
 
+
     BootstrapTable.prototype.refreshData = function (allRows) {
         //get a diff of the old data and the new data
         var oldRows = this.data,
