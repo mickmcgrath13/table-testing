@@ -24,8 +24,7 @@ import $ from 'jquery';
         _onSort = BootstrapTable.prototype.onSort;
 
     BootstrapTable.EVENTS = $.extend(BootstrapTable.EVENTS, {
-        'page-change-before.bs.table': 'onPageChangeBefore',
-        'sort-after.bs.table': 'onSortAfter',
+        'page-change-before.bs.table': 'onPageChangeBefore'
     });
 
     BootstrapTable.prototype.init = function () {
@@ -66,11 +65,5 @@ import $ from 'jquery';
         //trigger before event
         this.trigger('page-change-before', this.options.pageNumber, this.options.pageSize);
         _onPageNumber.apply(this, Array.prototype.slice.apply(arguments));
-    };
-
-    BootstrapTable.prototype.onSort = function (event) {
-        //trigger before event
-        _onSort.apply(this, Array.prototype.slice.apply(arguments));
-        this.trigger('sort-after');
     };
 })($);
