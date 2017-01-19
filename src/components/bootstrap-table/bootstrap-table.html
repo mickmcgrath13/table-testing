@@ -74,6 +74,7 @@
   import getMockData from 'table-testing/data/real-getMockData';
   import initFPSCounter from 'table-testing/util/fps';
   import PerformanceMap from 'table-testing/util/performance-map';
+  import 'table-testing/util/list-fix-hack';
 
   initFPSCounter();
 
@@ -88,13 +89,12 @@
     }),
     vm = can.viewModel('.demo');
 
-
   var startIndex = 0,
       refreshIntervalDuration = 10000,
       // refreshIntervalDuration = 10000,
       cols = 20, //this is not used with real data
-      rows = 20000,
-      maxRows = 40000,
+      rows = 50000,
+      maxRows = 200000,
       // maxRows = 50000,
       mockData = getMockData(cols,rows, startIndex),
       demoVm = new DemoVM({
@@ -102,7 +102,6 @@
         tableData: mockData
       }),
       refreshInterval = setInterval(() => {
-        // debugger;
         startIndex += rows;
         if(startIndex >= maxRows){
           clearInterval(refreshInterval);
@@ -111,9 +110,12 @@
         let newData = getMockData(cols, rows, startIndex),
             tableData = demoVm.attr("tableData").attr();
 
-        tableData.rows.push.apply(tableData.rows, newData.rows);
+        debugger;
+        tableData.rows = tableData.rows.concat(newData.rows);
+        debugger;
         demoVm.attr("tableData", tableData);
-      }, refreshIntervalDuration);
+        debugger;
+  }, refreshIntervalDuration);
 
   vm.attr({
     demoVm: demoVm

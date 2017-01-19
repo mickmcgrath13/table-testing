@@ -5,7 +5,7 @@
 import $ from 'jquery';
 import _ from 'lodash';
 
-var loopMax = 50000,
+var loopMax = 1000000,
     currentLoop = 0;
 
 (function ($) {

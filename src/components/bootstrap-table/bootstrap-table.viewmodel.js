@@ -46,8 +46,7 @@ export default Map.extend({
     },
     tableRows: {
       get(){
-        let tableData = this.attr("tableData");
-        return tableData.attr("rows");
+        return this.attr("tableData.rows");
       }
     },
     performanceMap:{
