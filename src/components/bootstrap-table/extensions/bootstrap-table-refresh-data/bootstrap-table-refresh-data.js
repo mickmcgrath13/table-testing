@@ -74,9 +74,11 @@ var loopMax = 50000,
 
     BootstrapTable.prototype.refreshData = function (allRows) {
         //get a diff of the old data and the new data
-        var oldRows = this.data,
+        var oldRawRows = this.options.data,
+            oldFilteredRows = this.data,
             newRows;
 
+        this.options.data = allRows;
 
         var sortStart,
             sortEnd,
@@ -86,10 +88,14 @@ var loopMax = 50000,
             diffEnd;
 
         diffStart = new Date().getTime();
-        newRows = this.getRowDiff(allRows, oldRows);
+        newRows = this.getRowDiff(allRows, oldRawRows);
         diffEnd = new Date().getTime();
 
         sortStart = new Date().getTime();
+
+        if (this.options.filtering && this.getFilterChain) {
+            newRows = newRows.filter(this.getFilterChain());
+        }
 
         //sort new rows
         newRows.sort((a, b) => {
@@ -101,15 +107,10 @@ var loopMax = 50000,
 
         //if there is no sort priority, just add the items to the end
         if(!this.options.sortPriority){
-            for(var i = oldRows.length, j=0; i < allRows.length; i++, j++){
-                this.insertRow({
-                    index: i,
-                    row: newRows[j]
-                });
-            }
+            this.data.concat(newRows);
         }else{
             var i = 0,
-                totalRows = allRows.length,
+                totalRows = this.data.length + newRows.length,
                 currentNewItem = newRows.shift(),
                 currentItem, comparatorResult, updateRowItem;
 
@@ -123,26 +124,22 @@ var loopMax = 50000,
                     break;
                 }
 
-                currentItem = oldRows[i];
+                currentItem = oldFilteredRows[i];
                 updateRowItem = false;
 
                 //if we've reached the end of the oldRows but still have newRows
                 //  they go at the end
-                if(i > (oldRows.length-1)){
-                    this.insertRow({
-                        index: i++,
-                        row: currentNewItem
-                    });
+                if(i > (oldFilteredRows.length-1)){
+                    this.data.push(currentNewItem);
+                    i++;
                     updateRowItem = true;
                 }else{
-                    var comparatorResult = this.sortComparator(currentNewItem, currentItem);
-                    
+                    comparatorResult = this.sortComparator(currentNewItem, currentItem);
+
                     //new item is before or equal, insert the item
                     if(comparatorResult === -1 || comparatorResult === 0){
-                        this.insertRow({
-                            index: i++,
-                            row: currentNewItem
-                        });
+                        this.data.push(currentNewItem);
+                        i++;
                         updateRowItem = true;
                     }else if(comparatorResult === 1){
                         i++;

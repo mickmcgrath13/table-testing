@@ -15,6 +15,7 @@ export default Map.extend({
               id: i,
               field: i,
               sortable: true,
+              filterable: true,
               originalData: h,
               width: i == 0 ? 193 : 110
             };

@@ -13,6 +13,8 @@ import './extensions/bootstrap-table-multiple-sort/';
 import './extensions/bootstrap-table-fixed-columns/';
 import './extensions/bootstrap-table-pagination-events/';
 import './extensions/bootstrap-table-refresh-data/';
+import './extensions/bootstrap-table-column-filters/';
+import './extensions/bootstrap-table-column-filters/bootstrap-table-column-filters.less!';
 
 
 //We'd probably want to implement our own filter control.  This one is pretty slow.
@@ -67,6 +69,8 @@ export default Component.extend({
           fixedNumber: 2,
 
           perfectScrollbar: true,
+
+          filtering: true,
 
           multiSort: true,
           // sortPriority: [{sortName: 1, sortOrder: 'asc'}, {sortName: 3, sortOrder: 'desc'}],
