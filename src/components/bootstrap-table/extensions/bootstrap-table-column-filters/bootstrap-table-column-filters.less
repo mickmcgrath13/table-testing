@@ -1,0 +1,9 @@
+@input-x-margin: 1em;
+@input-y-margin: 2px;
+
+.bootstrap-table th > input {
+	width: ~'calc(100% - '@input-x-margin*2~')';
+	margin: @input-y-margin @input-x-margin;
+	box-sizing: border-box;
+	display: inline-block;
+}
