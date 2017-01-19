@@ -26,6 +26,8 @@ export default Map.extend({
               objOut.titleTooltip=n;
             }
 
+            objOut.visible = !h.hide;
+
             switch (h.type) {
               case 'TIME':
                 objOut.formatter = function(value) {
