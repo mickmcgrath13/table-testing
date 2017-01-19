@@ -135,8 +135,8 @@ var loopMax = 50000,
                     });
                     updateRowItem = true;
                 }else{
-                    var comparatorResult = this.sortComparator(currentNewItem, currentItem);
-                    
+                    var comparatorResult = this.sortComparator(currentNewItem, currentItem, this.options.sortPriority);
+
                     //new item is before or equal, insert the item
                     if(comparatorResult === -1 || comparatorResult === 0){
                         this.insertRow({
