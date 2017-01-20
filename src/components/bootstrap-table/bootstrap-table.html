@@ -110,11 +110,8 @@
         let newData = getMockData(cols, rows, startIndex),
             tableData = demoVm.attr("tableData").attr();
 
-        debugger;
         tableData.rows = tableData.rows.concat(newData.rows);
-        debugger;
         demoVm.attr("tableData", tableData);
-        debugger;
   }, refreshIntervalDuration);
 
   vm.attr({
